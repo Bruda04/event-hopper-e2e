@@ -17,6 +17,10 @@ public class MyEventsPage {
     @FindBy(how = How.XPATH, using = "//h2")
     private WebElement heading;
 
+    @FindBy(how = CLASS_NAME, using = "create-button")
+    private WebElement createButton;
+
+
     public MyEventsPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -34,5 +38,12 @@ public class MyEventsPage {
         } catch (Exception e) {
             return true;
         }
+    }
+
+
+
+
+    public void clickCreateButton() {
+        new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(createButton)).click();
     }
 }
