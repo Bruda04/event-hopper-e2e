@@ -120,27 +120,21 @@ public class CreateEventPage {
         agendaLocationInput.clear();
         agendaLocationInput.sendKeys(location);
 
+
         agendaStartTimeInput.clear();
-        setTimeInput(agendaStartTimeInput, start);
+        agendaStartTimeInput.sendKeys(start);
+        if(Integer.parseInt(start.split(":")[0]) < 12){
+            agendaStartTimeInput.sendKeys(Keys.ARROW_UP);
+        }
 
         agendaEndTimeInput.clear();
-        setTimeInput(agendaEndTimeInput, end);
+        agendaEndTimeInput.sendKeys(end);
+        if(Integer.parseInt(end.split(":")[0]) < 12){
+            agendaEndTimeInput.sendKeys(Keys.ARROW_UP);
+        }
 
         addActivityButton.click();
     }
-
-    // Helper method to set time input correctly, including AM/PM suffix if needed
-    private void setTimeInput(WebElement timeInput, String time) {
-        // time must be exactly "HH:mm" in 24-hour format for <input type="time">
-
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(
-                "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));",
-                timeInput, time);
-    }
-
-
-
 
 
     public void clickFinish() {

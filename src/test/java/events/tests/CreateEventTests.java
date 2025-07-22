@@ -1,6 +1,5 @@
 package events.tests;
 
-import org.junit.Before;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import shared.TestBase;
@@ -48,8 +47,10 @@ public class CreateEventTests extends TestBase {
 
         page.clickNext();
 
-        page.fillAgenda("Opening Keynote", "Intro to the event", "Main Hall", "10:00", "11:00");
-        page.fillAgenda("Workshop", "Hands-on labs", "Lab Room", "11:15", "13:00");
+        page.fillAgenda("Opening Keynote", "Intro to the event", "Main Hall", "8:15", "11:00");
+        page.fillAgenda("Workshop", "Hands-on labs", "Lab Room", "11:15", "15:00");
+        page.fillAgenda("Networking", "Networking with industry leaders", "Coworking Space", "17:00", "18:00");
+
 
         page.clickFinish();
 
