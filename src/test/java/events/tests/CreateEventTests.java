@@ -1,5 +1,7 @@
 package events.tests;
 
+import org.junit.Before;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import shared.TestBase;
 import shared.pages.*;
@@ -9,6 +11,7 @@ import static org.testng.Assert.assertTrue;
 
 public class CreateEventTests extends TestBase {
 
+    @BeforeMethod
     private void navigateToCreateEvent() {
         LoginPage loginPage = new LoginPage(driver);
         assertTrue(loginPage.isPageOpened(), "Login page failed.");
