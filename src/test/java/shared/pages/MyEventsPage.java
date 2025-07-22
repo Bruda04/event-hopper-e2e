@@ -64,16 +64,21 @@ public class MyEventsPage {
     }
 
     public void openEventCardByTitle(String eventTitle) {
-        // Wait for the card with the given title to appear
-        By cardTitleLocator = By.xpath("//mat-card//mat-card-title[text()='" + eventTitle + "']");
+        // Locate the mat-card-title by visible text
+        By cardTitleLocator = By.xpath("//mat-card//mat-card-title[normalize-space(text())='" + eventTitle + "']");
         WebElement titleElement = new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.visibilityOfElementLocated(cardTitleLocator));
 
-        // Go up to the <mat-card> and click it (or the View More button inside)
+        // Go up to mat-card
         WebElement cardElement = titleElement.findElement(By.xpath("./ancestor::mat-card"));
-        WebElement viewMoreButton = cardElement.findElement(By.xpath(".//button[contains(text(), 'View More')]"));
+
+        // Now find the button within that mat-card
+        WebElement viewMoreButton = cardElement.findElement(By.xpath(".//button[.//text()[normalize-space()='View More']]"));
+
+        // Click the button
         viewMoreButton.click();
     }
+
 
 
 }

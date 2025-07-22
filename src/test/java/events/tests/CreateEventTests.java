@@ -43,6 +43,7 @@ public class CreateEventTests extends TestBase {
         CreateEventPage page = new CreateEventPage(driver);
         assertTrue(page.isPageOpened(), "Create Event page failed.");
 
+        assertTrue(page.isEventTypeDropdownValid(), "All not included in event type dropdown");
         page.fillEventInfo(
                 eventTitle,
                 eventDescription,
@@ -66,9 +67,11 @@ public class CreateEventTests extends TestBase {
         MyEventsPage myEventsPage = new MyEventsPage(driver);
         assertTrue(myEventsPage.isPageOpened(), "My Events page did not open.");
         assertTrue(myEventsPage.containsEventWithTitle(eventTitle), "Created event not found on My Events page.");
-        //myEventsPage.openEventCardByTitle(eventTitle);
+        myEventsPage.openEventCardByTitle(eventTitle);
 
-        Helper.takeScreenshoot(driver, "my events page");
+        SingleEventPage singleEventPage = new SingleEventPage(driver);
+        assertTrue(singleEventPage.isPageOpened(), "Single Event page did not open.");
+        Helper.takeScreenshoot(driver, "Created event page");
     }
 
     @Test
@@ -88,7 +91,8 @@ public class CreateEventTests extends TestBase {
     public void testOverlappingAgendaFails() {
         CreateEventPage page = new CreateEventPage(driver);
 
-        page.fillEventInfo("Overlap Test", "Agenda check", "Novi Sad", "Main Street", "08/20/2025", "50", "src/test/resources/profile_picture.jpg");
+        assertTrue(page.isEventTypeDropdownValid(), "All not included in event type dropdown");
+        page.fillEventInfo("Overlap Test", "Agenda check", "Novi Sad", "Main Street", "08/20/2025", "50", "src/test/resources/event_cover.jpg");
         page.clickNext();
 
         page.fillAgenda("Talk 1", "Session 1", "Room A", "10:00", "11:00");

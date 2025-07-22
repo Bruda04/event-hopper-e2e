@@ -5,6 +5,7 @@ import org.openqa.selenium.support.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.io.File;
+import java.util.List;
 
 public class CreateEventPage {
     private WebDriver driver;
@@ -106,6 +107,29 @@ public class CreateEventPage {
                 .isDisplayed();
     }
 
+    public boolean isEventTypeDropdownValid() {
+        eventTypeDropdown.click();
+
+        List<WebElement> options = new WebDriverWait(driver, 5)
+                .until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("mat-option")));
+
+        if (options.isEmpty()) {
+            return false;
+        }
+
+        String firstOptionText = options.get(0).getText().trim();
+        boolean hasAllInDropdown = firstOptionText.equalsIgnoreCase("All");
+
+        if (!hasAllInDropdown) {
+            System.out.println("Warning: First dropdown option is not 'All' (was: '" + firstOptionText + "')");
+        }
+        WebElement neutralArea = driver.findElement(By.tagName("body"));
+        neutralArea.click();
+
+        return hasAllInDropdown;
+    }
+
+
     public void fillEventInfo(String title, String description, String city, String address,
                               String date, String participants, String imagePath) {
         titleInput.sendKeys(title);
@@ -124,6 +148,9 @@ public class CreateEventPage {
         nextButton.click();
     }
 
+    public void clickFinish() {
+        finishButton.click();
+    }
 
     public void fillAgenda(String name, String description, String location, String start, String end) {
         WebDriverWait wait = new WebDriverWait(driver, 10);
@@ -154,11 +181,6 @@ public class CreateEventPage {
         addActivityButton.click();
 
 
-    }
-
-
-    public void clickFinish() {
-        finishButton.click();
     }
 
     public boolean isOverlappingTimeErrorDisplayed() {
