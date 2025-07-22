@@ -101,6 +101,10 @@ public class CreateEventPage {
     @FindBy(how = How.CLASS_NAME, using = "error-image-message")
     private WebElement eventImageRequiredError;
 
+    @FindBy(how = How.CLASS_NAME, using = "activity-card")
+    private List<WebElement> agendaCards;
+
+
 
     public CreateEventPage(WebDriver driver) {
         this.driver = driver;
@@ -114,9 +118,12 @@ public class CreateEventPage {
     }
 
     public boolean isEventTypeDropdownValid() {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.visibilityOf(eventTypeDropdown));
+
         eventTypeDropdown.click();
 
-        List<WebElement> options = new WebDriverWait(driver, 5)
+        List<WebElement> options = new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("mat-option")));
 
         if (options.isEmpty()) {
@@ -222,6 +229,45 @@ public class CreateEventPage {
         }
     }
 
+    //i have to fetch every time because the state of this changes
+    public int getAgendaCardCount() {
+        return driver.findElements(By.cssSelector(".activity-card")).size();
+    }
+
+    public boolean isAgendaCardPresent(String title){
+        List<WebElement> cards = driver.findElements(By.cssSelector(".activity-card"));
+
+        for (WebElement card : cards) {
+            try {
+                WebElement titleElement = card.findElement(By.cssSelector("mat-card-title"));
+                if (titleElement.getText().trim().equalsIgnoreCase(title.trim())) {
+                    return true;
+                }
+            } catch (NoSuchElementException | StaleElementReferenceException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public void removeAgendaByTitle(String title) {
+        List<WebElement> cards = driver.findElements(By.cssSelector(".activity-card"));
+
+        for (WebElement card : cards) {
+            try {
+                WebElement titleElement = card.findElement(By.cssSelector("mat-card-title"));
+                if (titleElement.getText().trim().equalsIgnoreCase(title.trim())) {
+                    WebElement removeButton = card.findElement(By.cssSelector("button.remove-button"));
+                    removeButton.click();
+                    return; // Stop after the first match
+                }
+            } catch (NoSuchElementException | StaleElementReferenceException e) {
+                System.out.println("Error processing activity card: " + e.getMessage());
+            }
+        }
+
+        throw new NoSuchElementException("No activity card found with title: " + title);
+    }
 
 
 }
