@@ -67,8 +67,32 @@ public class CreateEventPage {
     @FindBy(how = How.ID, using = "add_activity_btn")
     private WebElement addActivityButton;
 
+    @FindBy(xpath = "//mat-error[contains(text(),'This time range overlaps with an existing activity.')]")
+    private WebElement overlappingTimeError;
 
+    @FindBy(xpath = "//mat-error[contains(text(),'Title is required')]")
+    private WebElement titleRequiredError;
 
+    @FindBy(xpath = "//mat-error[contains(text(),'Field is required')]")
+    private WebElement maxParticipantsRequiredError;
+
+    @FindBy(xpath = "//mat-error[contains(text(),'Date is required.')]")
+    private WebElement dateRequiredError;
+
+    @FindBy(xpath = "//mat-error[contains(text(),'Description is required')]")
+    private WebElement descriptionRequiredError;
+
+    @FindBy(xpath = "//mat-error[contains(text(),'City is required')]")
+    private WebElement cityRequiredError;
+
+    @FindBy(xpath = "//mat-error[contains(text(),'Address is required')]")
+    private WebElement addressRequiredError;
+
+    @FindBy(xpath = "//mat-error[contains(text(),'Event type is required.')]")
+    private WebElement eventTypeRequiredError;
+
+    @FindBy(how = How.CLASS_NAME, using = "error-image-message")
+    private WebElement eventImageRequiredError;
 
 
     public CreateEventPage(WebDriver driver) {
@@ -82,7 +106,7 @@ public class CreateEventPage {
                 .isDisplayed();
     }
 
-    public void fillBasicInfo(String title, String description, String city, String address,
+    public void fillEventInfo(String title, String description, String city, String address,
                               String date, String participants, String imagePath) {
         titleInput.sendKeys(title);
         descriptionInput.sendKeys(description);
@@ -99,12 +123,6 @@ public class CreateEventPage {
     public void clickNext() {
         nextButton.click();
     }
-
-    public void uploadImage(String imagePath) {
-        File file = new File(imagePath);
-        imageUploadInput.sendKeys(file.getAbsolutePath());
-    }
-
 
 
     public void fillAgenda(String name, String description, String location, String start, String end) {
@@ -134,10 +152,42 @@ public class CreateEventPage {
         }
 
         addActivityButton.click();
+
+
     }
 
 
     public void clickFinish() {
         finishButton.click();
     }
+
+    public boolean isOverlappingTimeErrorDisplayed() {
+        try {
+            return overlappingTimeError.isDisplayed();
+        } catch (NoSuchElementException | StaleElementReferenceException e) {
+            return false;
+        }
+    }
+
+    public boolean allErrorMessagesDisplayed() {
+        try {
+            boolean allMessagesDisplayed = true;
+
+            allMessagesDisplayed &= titleRequiredError.isDisplayed();
+            allMessagesDisplayed &= maxParticipantsRequiredError.isDisplayed();
+            allMessagesDisplayed &= dateRequiredError.isDisplayed();
+            allMessagesDisplayed &= descriptionRequiredError.isDisplayed();
+            allMessagesDisplayed &= cityRequiredError.isDisplayed();
+            allMessagesDisplayed &= addressRequiredError.isDisplayed();
+            allMessagesDisplayed &= eventTypeRequiredError.isDisplayed();
+            allMessagesDisplayed &= eventImageRequiredError.isDisplayed();
+
+           return allMessagesDisplayed;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+
+
 }

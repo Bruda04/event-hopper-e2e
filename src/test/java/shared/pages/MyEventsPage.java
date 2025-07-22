@@ -46,4 +46,34 @@ public class MyEventsPage {
     public void clickCreateButton() {
         new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(createButton)).click();
     }
+
+    public boolean containsEventWithTitle(String eventTitle) {
+        try {
+            // Wait for at least one card to appear
+            new WebDriverWait(driver, 10).until(
+                    ExpectedConditions.presenceOfElementLocated(By.cssSelector(".single-card-item"))
+            );
+
+            // Try to find the mat-card-title with the expected text
+            return driver.findElements(By.cssSelector("mat-card mat-card-title"))
+                    .stream()
+                    .anyMatch(el -> el.getText().equals(eventTitle));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void openEventCardByTitle(String eventTitle) {
+        // Wait for the card with the given title to appear
+        By cardTitleLocator = By.xpath("//mat-card//mat-card-title[text()='" + eventTitle + "']");
+        WebElement titleElement = new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.visibilityOfElementLocated(cardTitleLocator));
+
+        // Go up to the <mat-card> and click it (or the View More button inside)
+        WebElement cardElement = titleElement.findElement(By.xpath("./ancestor::mat-card"));
+        WebElement viewMoreButton = cardElement.findElement(By.xpath(".//button[contains(text(), 'View More')]"));
+        viewMoreButton.click();
+    }
+
+
 }
