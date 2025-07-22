@@ -65,13 +65,19 @@ public class CreateEventTests extends TestBase {
         Helper.takeScreenshoot(driver, "full_event_with_agenda");
 
         MyEventsPage myEventsPage = new MyEventsPage(driver);
-        assertTrue(myEventsPage.isPageOpened(), "My Events page did not open.");
-        assertTrue(myEventsPage.containsEventWithTitle(eventTitle), "Created event not found on My Events page.");
+        Assert.assertTrue(myEventsPage.isPageOpened(), "My Events page did not open.");
+        Assert.assertTrue(myEventsPage.containsEventWithTitle(eventTitle), "Created event not found on My Events page.");
         myEventsPage.openEventCardByTitle(eventTitle);
 
         SingleEventPage singleEventPage = new SingleEventPage(driver);
-        assertTrue(singleEventPage.isPageOpened(), "Single Event page did not open.");
+        Assert.assertTrue(singleEventPage.isPageOpened(), "Single Event page did not open.");
         Helper.takeScreenshoot(driver, "Created event page");
+
+        Assert.assertEquals(eventTitle, singleEventPage.getEventTitle(), "Event title does not match.");
+        Assert.assertEquals(eventDescription, singleEventPage.getEventDescription(), "Event description does not match.");
+        Assert.assertTrue(singleEventPage.getEventAddress().contains(city), "Event address does not match city.");
+        Assert.assertTrue(singleEventPage.getEventAddress().contains(address), "Event address does not match address.");
+
     }
 
     @Test

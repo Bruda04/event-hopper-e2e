@@ -19,8 +19,8 @@ public class SingleEventPage {
     @FindBy(how = How.XPATH, using = "//div[@class='event-details']/p")
     private WebElement eventDescription;
 
-    @FindBy(how = How.XPATH, using = "//div[@class='info-banner']//h3[preceding-sibling::mat-icon[text()='place']]")
-    private WebElement eventAddress;
+    @FindBy(how = How.ID, using = "event_location_info")
+    private WebElement eventLocation;
 
     public SingleEventPage(WebDriver driver) {
         this.driver = driver;
@@ -50,7 +50,7 @@ public class SingleEventPage {
 
     public String getEventAddress() {
         return new WebDriverWait(driver, 10)
-                .until(ExpectedConditions.visibilityOf(eventAddress))
+                .until(ExpectedConditions.visibilityOf(eventLocation))
                 .getText().trim();
     }
 }
