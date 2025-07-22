@@ -7,6 +7,8 @@ import shared.TestBase;
 import shared.pages.*;
 import utils.Helper;
 
+import java.util.UUID;
+
 import static org.testng.Assert.assertTrue;
 
 public class CreateEventTests extends TestBase {
@@ -32,13 +34,15 @@ public class CreateEventTests extends TestBase {
 
     @Test
     public void testCreateFullEventWithAgenda() {
-        String eventTitle = "Selenium Conference";
+        String shortId = UUID.randomUUID().toString().substring(0, 5);
+        String eventTitle = "Selenium Conference " + shortId;
         String eventDescription = "A fully automated test event";
         String city = "Belgrade";
         String address = "Bulevar kralja Aleksandra";
         String date = "11/15/2025";
         String maxParticipants = "100";
         String imagePath = "src/test/resources/event_cover.jpg";
+        String privacyType = "Public";
 
         CreateEventPage page = new CreateEventPage(driver);
         assertTrue(page.isPageOpened(), "Create Event page failed.");
@@ -51,7 +55,8 @@ public class CreateEventTests extends TestBase {
                 address,
                 date,
                 maxParticipants,
-                imagePath
+                imagePath,
+                privacyType
         );
 
         page.clickNext();
@@ -77,7 +82,8 @@ public class CreateEventTests extends TestBase {
         Assert.assertEquals(eventDescription, singleEventPage.getEventDescription(), "Event description does not match.");
         Assert.assertTrue(singleEventPage.getEventAddress().contains(city), "Event address does not match city.");
         Assert.assertTrue(singleEventPage.getEventAddress().contains(address), "Event address does not match address.");
-
+        Assert.assertTrue(singleEventPage.getEventPrivacy().equalsIgnoreCase(privacyType),
+                "Event privacy does not match expected value: " + privacyType);
     }
 
     @Test
@@ -98,7 +104,7 @@ public class CreateEventTests extends TestBase {
         CreateEventPage page = new CreateEventPage(driver);
 
         assertTrue(page.isEventTypeDropdownValid(), "All not included in event type dropdown");
-        page.fillEventInfo("Overlap Test", "Agenda check", "Novi Sad", "Main Street", "08/20/2025", "50", "src/test/resources/event_cover.jpg");
+        page.fillEventInfo("Overlap Test", "Agenda check", "Novi Sad", "Main Street", "08/20/2025", "50", "src/test/resources/event_cover.jpg", "public");
         page.clickNext();
 
         page.fillAgenda("Talk 1", "Session 1", "Room A", "10:00", "11:00");

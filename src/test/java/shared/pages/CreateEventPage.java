@@ -43,6 +43,12 @@ public class CreateEventPage {
     @FindBy(xpath = "//mat-option")
     private WebElement firstDropdownOption;
 
+    @FindBy(xpath = "//mat-radio-button[@value='public']")
+    private WebElement publicPrivacyRadio;
+
+    @FindBy(xpath = "//mat-radio-button[@value='private']")
+    private WebElement privatePrivacyRadio;
+
     @FindBy(css = ".next-button")
     private WebElement nextButton;
 
@@ -131,7 +137,7 @@ public class CreateEventPage {
 
 
     public void fillEventInfo(String title, String description, String city, String address,
-                              String date, String participants, String imagePath) {
+                              String date, String participants, String imagePath, String privacyType) {
         titleInput.sendKeys(title);
         descriptionInput.sendKeys(description);
         cityInput.sendKeys(city);
@@ -139,6 +145,12 @@ public class CreateEventPage {
         dateInput.sendKeys(date);
         participantsInput.sendKeys(participants);
         imageInput.sendKeys(new File(imagePath).getAbsolutePath());
+
+        if(privacyType.equalsIgnoreCase("private")){
+            privatePrivacyRadio.click();
+        } else {
+            publicPrivacyRadio.click();
+        }
 
         eventTypeDropdown.click();
         new WebDriverWait(driver, 5).until(ExpectedConditions.elementToBeClickable(firstDropdownOption)).click();
