@@ -78,8 +78,6 @@ public class CreateEventTests extends TestBase {
 
         page.clickFinish();
 
-        Helper.takeScreenshoot(driver, "full_event_with_agenda");
-
         MyEventsPage myEventsPage = new MyEventsPage(driver);
         Assert.assertTrue(myEventsPage.isPageOpened(), "My Events page did not open.");
         Assert.assertTrue(myEventsPage.containsEventWithTitle(eventTitle), "Created event not found on My Events page.");
