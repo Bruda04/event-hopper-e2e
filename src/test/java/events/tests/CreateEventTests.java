@@ -63,7 +63,18 @@ public class CreateEventTests extends TestBase {
 
         page.fillAgenda("Opening Keynote", "Intro to the event", "Main Hall", "8:15", "11:00");
         page.fillAgenda("Workshop", "Hands-on labs", "Lab Room", "11:15", "15:00");
+        page.fillAgenda("To be removed", "Testing removal of an activity", "Irrelevant", "15:30", "16:00");
         page.fillAgenda("Networking", "Networking with industry leaders", "Coworking Space", "17:00", "18:00");
+
+        page.removeAgendaByTitle("To be removed");
+
+        Assert.assertEquals(page.getAgendaCardCount(), 3, "Agenda activities count does not match expected value.");
+
+        Assert.assertTrue(page.isAgendaCardPresent("Opening Keynote"), "Opening Keynote activity not found.");
+        Assert.assertTrue(page.isAgendaCardPresent("Workshop"), "Workshop activity not found.");
+        Assert.assertTrue(page.isAgendaCardPresent("Networking"), "Networking activity not found.");
+        Assert.assertFalse(page.isAgendaCardPresent("To be removed"), "Opening Keynote activity not found.");
+
 
         page.clickFinish();
 
@@ -88,7 +99,6 @@ public class CreateEventTests extends TestBase {
 
     @Test
     public void testMissingRequiredFieldsShowsErrors() {
-        navigateToCreateEvent();
         CreateEventPage page = new CreateEventPage(driver);
         assertTrue(page.isPageOpened(), "Create Event page failed.");
 
@@ -109,6 +119,10 @@ public class CreateEventTests extends TestBase {
 
         page.fillAgenda("Talk 1", "Session 1", "Room A", "10:00", "11:00");
         page.fillAgenda("Talk 2", "Session 2", "Room B", "10:30", "11:30"); // Overlaps
+
+        Assert.assertEquals(page.getAgendaCardCount(), 1, "Agenda activities count does not match expected value.");
+
+
 
         Helper.takeScreenshoot(driver, "overlap_agenda_test");
         Assert.assertTrue(page.isOverlappingTimeErrorDisplayed(), "Overlapping time error not displayed as expected.");
