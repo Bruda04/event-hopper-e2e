@@ -1,5 +1,7 @@
 package shared.pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -31,4 +33,35 @@ public class HomePage {
         return (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(heading)).isDisplayed();
     }
+
+    public boolean containsCardWithTitle(String title) {
+        try {
+            new WebDriverWait(driver, 10).until(
+                    ExpectedConditions.presenceOfElementLocated(By.cssSelector(".single-card-item"))
+            );
+
+            return driver.findElements(By.cssSelector("mat-card-title"))
+                    .stream()
+                    .anyMatch(el -> el.getText().trim().equals(title));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public void openCardByTitle(String title) {
+        By cardLocator = By.xpath("//mat-card[.//mat-card-title[normalize-space(text())='" + title + "']]");
+
+        WebElement cardElement = new WebDriverWait(driver, 15)
+                .until(ExpectedConditions.presenceOfElementLocated(cardLocator));
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", cardElement);
+
+        WebElement viewMoreButton = cardElement.findElement(By.xpath(".//button[.//span[normalize-space(text())='View More']]"));
+
+        new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(viewMoreButton)).click();
+    }
+
+
+
 }

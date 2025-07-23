@@ -29,6 +29,9 @@ public class SingleEventPage {
     @FindBy(how = How.ID, using = "event_time_info")
     private WebElement eventTime;
 
+    @FindBy(how = How.ID, using = "budgetingBtn")
+    private WebElement editBudgetButton;
+
     public SingleEventPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -65,6 +68,12 @@ public class SingleEventPage {
         return new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.visibilityOf(eventPrivacy))
                 .getText().trim();
+    }
+
+    public void clickEditBudgetButton() {
+        new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.elementToBeClickable(editBudgetButton))
+                .click();
     }
 
 }
