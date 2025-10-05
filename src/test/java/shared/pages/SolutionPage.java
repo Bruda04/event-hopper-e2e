@@ -40,6 +40,16 @@ public class SolutionPage {
         PageFactory.initElements(driver, this);
     }
 
+    public boolean isBuyButtonPresent(){
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.visibilityOf(buyButton));
+            return buyButton.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void buyProduct() {
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
@@ -57,5 +67,9 @@ public class SolutionPage {
         wait.until(ExpectedConditions.elementToBeClickable(confirmationBuyButton)).click();
 
         Helper.takeScreenshoot(driver, "solution_page_confirmation_buy_button_clicked");
+    }
+
+    public void bookService(){
+
     }
 }
