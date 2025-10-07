@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.Helper;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.openqa.selenium.support.How.XPATH;
@@ -67,6 +68,11 @@ public class SolutionPage {
         wait.until(ExpectedConditions.elementToBeClickable(confirmationBuyButton)).click();
 
         Helper.takeScreenshoot(driver, "solution_page_confirmation_buy_button_clicked");
+    }
+
+    public void clickBuyButton(){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10).getSeconds());
+        wait.until(ExpectedConditions.elementToBeClickable(buyButton)).click();
     }
 
     public void bookService(){
