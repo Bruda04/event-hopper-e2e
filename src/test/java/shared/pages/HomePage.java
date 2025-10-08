@@ -62,6 +62,4 @@ public class HomePage {
         new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(viewMoreButton)).click();
     }
 
-
-
 }
