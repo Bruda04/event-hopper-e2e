@@ -14,6 +14,8 @@ import org.testng.Assert;
 import utils.Helper;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.testng.Assert.assertTrue;
@@ -75,7 +77,10 @@ public class FilterSearchTests extends TestBase {
                 .until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
 
 
-        List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
+        List<WebElement> events = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                By.cssSelector(".all-events .single-card-item")));
+
         Helper.takeScreenshoot(driver,"Search by description");
         Assert.assertTrue(!events.isEmpty(), "At least one event should match the search query.");
 
@@ -205,67 +210,49 @@ public class FilterSearchTests extends TestBase {
         Assert.assertTrue(allMatch, "All events should be in New York and have title 'Halloween Party'");
     }
 
+    @Test(priority = 7)
+    public void testSortByTitle() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
 
-//    @Test(priority = 7)
-//    public void testFilterByEventType() {
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
-//        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-//        searchInput.clear();
-//
-//        WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
-//        filterButton.click();
-//
-//        WebElement filterPanel = wait.until(
-//                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".filter-panel"))
-//        );
-//
-//        WebElement eventTypeSelect = filterPanel.findElement(By.cssSelector("mat-select[formControlName='eventType']"));
-//        eventTypeSelect.click();
-//
-//        List<WebElement> eventTypeOptions = wait.until(
-//                ExpectedConditions.visibilityOfAllElementsLocatedBy(
-//                        By.cssSelector("div.cdk-overlay-container mat-option span"))
-//        );
-//
-//        boolean clicked = false;
-//        for (WebElement option : eventTypeOptions) {
-//            if (option.getText().trim().equalsIgnoreCase("Virtual")) {
-//                wait.until(ExpectedConditions.elementToBeClickable(option));
-//                option.click();
-//                clicked = true;
-//                break;
-//            }
-//        }
-//        Assert.assertTrue(clicked, "Event type option 'Virtual' should be present and clicked");
-//
-//        List<WebElement> oldEvents = driver.findElements(By.cssSelector(".all-events .single-card-item"));
-//
-//        WebElement applyFilterButton = filterPanel.findElement(By.cssSelector(".filter-actions button"));
-//        applyFilterButton.click();
-//
-//        if (!oldEvents.isEmpty()) {
-//            wait.until(ExpectedConditions.stalenessOf(oldEvents.get(0)));
-//        }
-//
-//        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-//                By.cssSelector(".all-events .single-card-item"), 0));
-//
-//        List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
-//
-//        for (WebElement e : events) {
-//            System.out.println("CARD TEXT: " + e.getText());
-//        }
-//
-//        boolean allMatch = events.stream().allMatch(e ->
-//                e.getText().toLowerCase().contains("virtual")
-//        );
-//
-//        Assert.assertTrue(allMatch, "All event types should be 'Virtual'");
-//
-//        Helper.takeScreenshoot(driver, "Filter by Event Type");
-//    }
+        WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
+        filterButton.click();
 
+        WebElement filterPanel = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".filter-panel"))
+        );
 
+        WebElement sortByNameRadio = filterPanel.findElement(
+                By.cssSelector("mat-radio-button[value='name']")
+        );
+        wait.until(ExpectedConditions.elementToBeClickable(sortByNameRadio));
+        sortByNameRadio.click();
+
+        WebElement applyFilterButton = filterPanel.findElement(
+                By.cssSelector(".filter-actions button mat-icon")
+        );
+        applyFilterButton.click();
+
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
+                By.cssSelector(".all-events .single-card-item"), 0));
+
+        List<WebElement> eventCards = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        List<String> titles = new ArrayList<>();
+
+        for (WebElement card : eventCards) {
+            WebElement titleElement = card.findElement(By.cssSelector("mat-card-title"));
+            titles.add(titleElement.getText().trim());
+        }
+
+        List<String> sortedTitles = new ArrayList<>(titles);
+        Collections.sort(sortedTitles, String.CASE_INSENSITIVE_ORDER);
+
+        System.out.println("Displayed titles: " + titles);
+        System.out.println("Sorted titles: " + sortedTitles);
+
+        Assert.assertEquals(titles, sortedTitles, "Events should be sorted alphabetically by title (A–Z)");
+
+        Helper.takeScreenshoot(driver, "Sort by Title");
+    }
 
 
 }
