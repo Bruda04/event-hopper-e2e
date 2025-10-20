@@ -23,14 +23,14 @@ import static org.testng.Assert.assertTrue;
 public class FilterSearchTests extends TestBase {
 
     private static final int TIMEOUT = 5;
-
+    private HomePage homePage;
     @BeforeMethod
     private void setup(){
         LoginPage loginPage = new LoginPage(driver);
         assertTrue(loginPage.isPageOpened(), "Login page failed.");
         loginPage.login(LoginPage.organizer3Username, LoginPage.organizer3Password);
 
-        HomePage homePage = new HomePage(driver);
+        homePage = new HomePage(driver);
         assertTrue(homePage.isPageOpened(), "Home page failed.");
 
     }
@@ -45,11 +45,8 @@ public class FilterSearchTests extends TestBase {
     @Test(priority = 2, dependsOnMethods = {"testEventsAreDisplayedInitially"})
     public  void testSearchByTitle(){
         WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
-        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-        searchInput.clear();
-        searchInput.sendKeys("Halloween Party");
-        WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
-        searchButton.click();
+
+        homePage.searchByTitle("Halloween Party");
 
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
 
@@ -69,17 +66,12 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 3)
     public void testSearchByDescription(){
-        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-        searchInput.clear();
-        searchInput.sendKeys("join");
-        WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
-        searchButton.click();
-
-        new WebDriverWait(driver, TIMEOUT)
-                .until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
-
 
         WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
+        homePage.searchByDescription("join");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
+
+
         List<WebElement> events = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(
                 By.cssSelector(".all-events .single-card-item")));
 
@@ -97,16 +89,13 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 4)
     public void testSearchNoResults(){
-        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-        searchInput.clear();
-        searchInput.sendKeys("aaaaaaaaa");
-        WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
-        searchButton.click();
+
+        homePage.searchByDescription("aaaaaaaaa");
 
         new WebDriverWait(driver, TIMEOUT)
                 .until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".all-events .single-card-item"), 0));
 
-        List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        List<WebElement> events = homePage.getAllEventCards();
         Helper.takeScreenshoot(driver,"Search no results");
         Assert.assertTrue(events.isEmpty(), "List should be empty.");
 
@@ -115,44 +104,14 @@ public class FilterSearchTests extends TestBase {
     @Test(priority = 5)
     public void testFilterByLocation() {
         WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
-        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-        searchInput.clear();
-
-        WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
-        filterButton.click();
-
-        WebElement filterPanel = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".filter-panel"))
-        );
-
-        WebElement locationSelect = driver.findElement(By.cssSelector("mat-select[formControlName='city']"));
-        locationSelect.click();
-
-        List<WebElement> cityOptions = wait.until(
-                ExpectedConditions.visibilityOfAllElementsLocatedBy(
-                        By.cssSelector("div.cdk-overlay-container mat-option span"))
-        );
-
-        boolean clicked = false;
-        for (WebElement option : cityOptions) {
-            if (option.getText().trim().equals("New York")) {
-                option.click();
-                clicked = true;
-                break;
-            }
-        }
-        Assert.assertTrue(clicked, "City option 'New York' should be present and clicked");
-
-
-        WebElement applyFilter = driver.findElement(By.cssSelector(".all-events .filter-actions button mat-icon"));
-        applyFilter.click();
+        homePage.openFilterPanel();
+        homePage.selectCity("New York");
+        homePage.applyFilter();
 
         Helper.takeScreenshoot(driver,"Filter by location");
 
-        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-                By.cssSelector(".all-events .single-card-item"), 0));
 
-        List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        List<WebElement> events = homePage.getAllEventCards();
         boolean allMatch = events.stream().allMatch(e -> {
             WebElement location = e.findElement(By.cssSelector("mat-card-content p:first-of-type"));
             return location.getText().contains("New York");
@@ -163,45 +122,15 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 6, dependsOnMethods = {"testSearchByTitle", "testFilterByLocation"})
     public void testFilterByLocationAndTitle() {
-        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
-        WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
-        searchInput.clear();
-        searchInput.sendKeys("Halloween Party");
 
-        WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
-        filterButton.click();
-
-        WebElement filterPanel = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".filter-panel"))
-        );
-
-        WebElement locationSelect = driver.findElement(By.cssSelector("mat-select[formControlName='city']"));
-        locationSelect.click();
-
-        List<WebElement> cityOptions = wait.until(
-                ExpectedConditions.visibilityOfAllElementsLocatedBy(
-                        By.cssSelector("div.cdk-overlay-container mat-option span"))
-        );
-
-        boolean clicked = false;
-        for (WebElement option : cityOptions) {
-            if (option.getText().trim().equals("New York")) {
-                option.click();
-                clicked = true;
-                break;
-            }
-        }
-        Assert.assertTrue(clicked, "City option 'New York' should be present and clicked");
-
-        WebElement applyFilter = driver.findElement(By.cssSelector(".all-events .filter-actions button mat-icon"));
-        applyFilter.click();
+        homePage.searchByTitle("Halloween Party");
+        homePage.openFilterPanel();
+        homePage.selectCity("New York");
+        homePage.applyFilter();
 
         Helper.takeScreenshoot(driver,"Filter by location and title");
 
-        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-                By.cssSelector(".all-events .single-card-item"), 0));
-
-        List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        List<WebElement> events = homePage.getAllEventCards();
         boolean allMatch = events.stream().allMatch(e -> {
             WebElement location = e.findElement(By.cssSelector("mat-card-content p:first-of-type"));
             WebElement title = e.findElement(By.cssSelector("mat-card-title"));
@@ -214,30 +143,11 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 7)
     public void testSortByTitle() {
-        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
 
-        WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
-        filterButton.click();
+        homePage.openFilterPanel();
+        homePage.sortByTitle();
 
-        WebElement filterPanel = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".filter-panel"))
-        );
-
-        WebElement sortByNameRadio = filterPanel.findElement(
-                By.cssSelector("mat-radio-button[value='name']")
-        );
-        wait.until(ExpectedConditions.elementToBeClickable(sortByNameRadio));
-        sortByNameRadio.click();
-
-        WebElement applyFilterButton = filterPanel.findElement(
-                By.cssSelector(".filter-actions button mat-icon")
-        );
-        applyFilterButton.click();
-
-        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-                By.cssSelector(".all-events .single-card-item"), 0));
-
-        List<WebElement> eventCards = driver.findElements(By.cssSelector(".all-events .single-card-item"));
+        List<WebElement> eventCards = homePage.getAllEventCards();
         List<String> titles = new ArrayList<>();
 
         for (WebElement card : eventCards) {
