@@ -22,6 +22,8 @@ import static org.testng.Assert.assertTrue;
 
 public class FilterSearchTests extends TestBase {
 
+    private static final int TIMEOUT = 5;
+
     @BeforeMethod
     private void setup(){
         LoginPage loginPage = new LoginPage(driver);
@@ -42,14 +44,14 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 2, dependsOnMethods = {"testEventsAreDisplayedInitially"})
     public  void testSearchByTitle(){
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
         WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
         searchInput.clear();
-        searchInput.sendKeys("Winter Fest");
+        searchInput.sendKeys("Halloween Party");
         WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
         searchButton.click();
 
-        new WebDriverWait(driver, Duration.ofSeconds(2).getSeconds())
-                .until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
 
         List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
         Helper.takeScreenshoot(driver,"Search by name");
@@ -58,10 +60,10 @@ public class FilterSearchTests extends TestBase {
 
         boolean found = events.stream().anyMatch(e -> {
             WebElement title = e.findElement(By.cssSelector("mat-card-title"));
-            return title.getText().equals("Winter Fest");
+            return title.getText().equals("Halloween Party");
         });
 
-        Assert.assertTrue(found, "Event with name 'Winter Fest' should be present after search");
+        Assert.assertTrue(found, "Event with name 'Halloween Party' should be present after search");
 
     }
 
@@ -73,11 +75,11 @@ public class FilterSearchTests extends TestBase {
         WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
         searchButton.click();
 
-        new WebDriverWait(driver, Duration.ofSeconds(2).getSeconds())
+        new WebDriverWait(driver, TIMEOUT)
                 .until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".all-events .single-card-item"), 0));
 
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
         List<WebElement> events = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(
                 By.cssSelector(".all-events .single-card-item")));
 
@@ -101,7 +103,7 @@ public class FilterSearchTests extends TestBase {
         WebElement searchButton = driver.findElement(By.cssSelector(".all-events .search-bar .search-button"));
         searchButton.click();
 
-        new WebDriverWait(driver, Duration.ofSeconds(2).getSeconds())
+        new WebDriverWait(driver, TIMEOUT)
                 .until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".all-events .single-card-item"), 0));
 
         List<WebElement> events = driver.findElements(By.cssSelector(".all-events .single-card-item"));
@@ -112,7 +114,7 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 5)
     public void testFilterByLocation() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
         WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
         searchInput.clear();
 
@@ -161,7 +163,7 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 6, dependsOnMethods = {"testSearchByTitle", "testFilterByLocation"})
     public void testFilterByLocationAndTitle() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
         WebElement searchInput = driver.findElement(By.cssSelector(".all-events .search-bar .search"));
         searchInput.clear();
         searchInput.sendKeys("Halloween Party");
@@ -212,7 +214,7 @@ public class FilterSearchTests extends TestBase {
 
     @Test(priority = 7)
     public void testSortByTitle() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5).getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT);
 
         WebElement filterButton = driver.findElement(By.cssSelector(".all-events .filter-button"));
         filterButton.click();
